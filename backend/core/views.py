@@ -7,7 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage
+from django.forms.models import model_to_dict
 
 
 class SingleRecordView(View):
@@ -28,13 +29,7 @@ class SingleRecordView(View):
 
         return JsonResponse({
             "success": True,
-            "data": {
-                "source": report.source,
-                "confidence": report.confidence,
-                "status": report.status,
-                "timestamp_start": report.timestamp_start,
-                "timestamp_end": report.timestamp_end
-            }
+            "data": model_to_dict(report)
         })
 
 
@@ -55,13 +50,9 @@ class AccidentListView(View):
                 reports = paginator.page(current_page)
 
                 for report in reports:
-                    output.append({
-                        "source": report.source,
-                        "confidence": report.confidence,
-                        "status": report.status,
-                        "timestamp_start": report.timestamp_start,
-                        "timestamp_end": report.timestamp_end
-                    })
+                    output.append(
+                        model_to_dict(report)
+                    )
             except EmptyPage:
                 pass
 
@@ -86,9 +77,6 @@ class AccidentListView(View):
             if not confidence:
                 raise Exception("Confidence not found")
 
-            if confidence < 0 or confidence > 1:
-                raise Exception("Confidence must be between 0 and 1")
-
             if not status:
                 raise Exception("Status not found")
 
@@ -112,14 +100,7 @@ class AccidentListView(View):
                     'type': 'send_notification',
                     'notification': {
                         "type": "new_alert",
-                        "data": {
-                            "id": report.id,
-                            "source": source,
-                            "confidence": confidence,
-                            "status": status,
-                            "timestamp_start": report.timestamp_start,
-                            "timestamp_end": report.timestamp_end
-                        }
+                        "data": [model_to_dict(report)]
                     }
                 }
             )
