@@ -3,7 +3,7 @@ node_modules
 videos
 model
 __pycache__
-
+.idea
 .DS_Store
 
 venv/
