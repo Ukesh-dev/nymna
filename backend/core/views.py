@@ -2,12 +2,12 @@ from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
 from core.models import Report
-from django.core.paginator import Paginator
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class SingleRecordView(View):
@@ -43,24 +43,27 @@ class SingleRecordView(View):
 class AccidentListView(View):
 
     def get(self, request, *args, **kwargs):
-        current_page = request.GET.get('page', 1)
+        current_page = kwargs.pop('page', 1)
 
         total_pages = 1
         output = []
         all_reports = Report.objects.all()
         if all_reports.count() > 0:
-            paginator = Paginator(all_reports, 10)
-            total_pages = paginator.num_pages
-            reports = paginator.page(current_page)
+            try:
+                paginator = Paginator(all_reports, 10)
+                total_pages = paginator.num_pages
+                reports = paginator.page(current_page)
 
-            for report in reports:
-                output.append({
-                    "source": report.source,
-                    "confidence": report.confidence,
-                    "status": report.status,
-                    "timestamp_start": report.timestamp_start,
-                    "timestamp_end": report.timestamp_end
-                })
+                for report in reports:
+                    output.append({
+                        "source": report.source,
+                        "confidence": report.confidence,
+                        "status": report.status,
+                        "timestamp_start": report.timestamp_start,
+                        "timestamp_end": report.timestamp_end
+                    })
+            except EmptyPage:
+                pass
 
         return JsonResponse({
             "success": True,
@@ -82,6 +85,9 @@ class AccidentListView(View):
 
             if not confidence:
                 raise Exception("Confidence not found")
+
+            if confidence < 0 or confidence > 1:
+                raise Exception("Confidence must be between 0 and 1")
 
             if not status:
                 raise Exception("Status not found")
