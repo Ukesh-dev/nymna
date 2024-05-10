@@ -4,18 +4,12 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Transition,
-} from "@headlessui/react";
-import { EllipsisVertical, PencilIcon } from "lucide-react";
+import { Button } from "@headlessui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Dialogs from "../../../components/ui/Dialogs";
 
-const statuses = {
+const statuses: Record<string, string> = {
   Minor: "text-green-400 bg-green-400/10",
   Mediocre: "text-amber-400 bg-amber-400/10",
   Severe: "text-rose-400 bg-rose-400/10",
@@ -106,6 +100,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function IncidentTable() {
+  const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const columns: ColumnDef<IncidentType>[] = [
     {
@@ -169,36 +164,14 @@ export default function IncidentTable() {
       // cell: ({ row }) => <DataTableRowActions row={row} />,
       cell: (original) => {
         return (
-          <Menu>
-            <MenuButton className="inline-flex items-center gap-2 rounded-md bg-gray-800 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
-              <EllipsisVertical className="size-4 fill-white/60" />
-            </MenuButton>
-            <Transition
-              enter="transition ease-out duration-75"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <MenuItems
-                anchor="bottom end"
-                className="w-52 origin-top-right rounded-xl border border-black/50 bg-black/50 p-1 text-sm/6 text-white [--anchor-gap:var(--spacing-1)] focus:outline-none"
-              >
-                <MenuItem>
-                  <button
-                    onClick={() => {
-                      navigate(`/incidents/${original.row.original.user}`);
-                    }}
-                    className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
-                  >
-                    <PencilIcon className="size-4 fill-white/30" />
-                    Incident Details
-                  </button>
-                </MenuItem>
-              </MenuItems>
-            </Transition>
-          </Menu>
+          <Button
+            onClick={() => {
+              navigate(`${original.row.original.branch}`);
+            }}
+            className="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white"
+          >
+            View
+          </Button>
         );
       },
     },
@@ -227,7 +200,7 @@ export default function IncidentTable() {
   return (
     <div className="bg-gray-transparent py-10 lg:pl-72">
       <h2 className="px-4 text-base font-semibold leading-7 text-white sm:px-6 lg:px-8">
-        Latest activity
+        Latest incident
       </h2>
       <table className="mt-6 w-full whitespace-nowrap text-left">
         {/* <colgroup> */}
@@ -260,7 +233,7 @@ export default function IncidentTable() {
           ))}
         </thead>
         <tbody className="divide-y divide-white/5">
-          {table.getRowModel().rows?.length ? (
+          {table.getRowModel().rows?.length > 0 ? (
             table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
@@ -282,6 +255,13 @@ export default function IncidentTable() {
           )}
         </tbody>
       </table>
+      <Dialogs
+        message="hell"
+        open={open}
+        setOpen={(open: boolean) => {
+          setOpen(open);
+        }}
+      />
     </div>
   );
 }
