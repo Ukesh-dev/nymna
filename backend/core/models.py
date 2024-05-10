@@ -10,3 +10,4 @@ class Report(models.Model):
         ('mediocre', 'Mediocre'),
         ('severe', 'Severe'),
     ])
+    timestamp = models.IntegerField(null=True, blank=True)
