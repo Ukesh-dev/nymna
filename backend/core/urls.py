@@ -2,6 +2,7 @@ from django.urls import path
 from .views import AccidentListView, SingleRecordView
 
 urlpatterns = [
-    path("records/", AccidentListView.as_view(), name="showlist"),
-    path("record/<int:id>/", SingleRecordView.as_view(), name="singlerecord"),
+    path("reports/", AccidentListView.as_view(), name="showlist"),
+    path("reports/paged/<int:page>/", AccidentListView.as_view(), name="showlistpage"),
+    path("report/<int:id>/", SingleRecordView.as_view(), name="singlerecord"),
 ]

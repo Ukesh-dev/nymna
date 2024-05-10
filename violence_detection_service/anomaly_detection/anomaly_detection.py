@@ -31,7 +31,7 @@ class AnomalyDetection:
         return indices
 
     def detect_anomaly(self, frame, conf: float = 0.5) -> List[AnomalyDetectionResult] | str:
-        results = self.model.detect(frame)
+        results = self.model(frame)
         tracked_objects: List = []
         try:
             for result in results:
@@ -41,6 +41,7 @@ class AnomalyDetection:
                     if confidence >= conf:
                         detected_object_index = int(box.cls)
                         timestamp: int = int(datetime.now().timestamp() * 1000)
+
                         class_name = str(self.model.names[detected_object_index])
                         tracked_objects.append(
                             AnomalyDetectionResult(
