@@ -5,7 +5,7 @@ import cv2
 from ultralytics import YOLO
 
 from violence_detection_service.settings import get_model_path
-from violence_detection_service.violence_detection.anamoly_detection_pydantic.anamoly_detection_pdantic import \
+from violence_detection_service.anomaly_detection.anamoly_detection_pydantic.anamoly_detection_pdantic import \
     AnomalyDetectionResult
 
 
