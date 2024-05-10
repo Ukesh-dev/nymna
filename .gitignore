@@ -5,8 +5,4 @@ model
 __pycache__
 .idea
 .DS_Store
-../.DS_Store
-../.idea/
-violence_detection_service/model
-violence_detection_service/train_data.zip
-violence_detection_service/train_data/
+
