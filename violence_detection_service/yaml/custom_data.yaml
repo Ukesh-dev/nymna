@@ -1,8 +1,8 @@
-path: /Users/anishkamukherjee/Documents/nymna/train_data
-train: /Users/anishkamukherjee/Documents/nymna/train_data/images/train
-val: Users/anishkamukherjee/Documents/nymna/train_data/images/val
+path: /Users/anishkamukherjee/Documents/nymna/violence_detection_service/train_data
+train: /Users/anishkamukherjee/Documents/nymna/violence_detection_service/train_data/images/train
+val: /Users/anishkamukherjee/Documents/nymna/violence_detection_service/train_data/images/val
 
-nc: 11
+nc: 12
 
 names:
   0: person
@@ -13,7 +13,7 @@ names:
   5: bus
   6: train
   7: truck
-  43: knife
-  8: minor
-  9: mediocre
-  10: severe
+  8: knife
+  9: minor
+  10: mediocre
+  11: severe

@@ -1,10 +1,11 @@
+import os.path
 from datetime import datetime
 from typing import List
 
 import cv2
 from ultralytics import YOLO
 
-from violence_detection_service.settings import get_model_path
+from violence_detection_service.settings import get_model_path, Settings
 from violence_detection_service.anomaly_detection.anamoly_detection_pydantic.anamoly_detection_pdantic import \
     AnomalyDetectionResult
 
@@ -15,8 +16,7 @@ class AnomalyDetection:
         self.source_url = source_url
         self.model = YOLO(get_model_path())
         self.cap = cv2.VideoCapture(source_url)
-        self.classes_dict = self.model.names
-        self.reverse_dict = {v: k for k, v in self.classes_dict.items()}
+        self.reverse_dict = {v: k for k, v in self.model.names}
         self.w, self.h, self.fps = self.get_video_properties()
 
     def get_video_properties(self):
@@ -30,7 +30,7 @@ class AnomalyDetection:
         return indices
 
     def detect_anomaly(self, frame, conf: float = 0.5) -> List[AnomalyDetectionResult] | str:
-        results = self.model.detect(frame)
+        results = self.model(frame)
         tracked_objects: List = []
         try:
             for result in results:
@@ -39,16 +39,20 @@ class AnomalyDetection:
                     confidence = round(float(box.conf), 2)
                     if confidence >= conf:
                         detected_object_index = int(box.cls)
-                        timestamp: int = int(datetime.now().timestamp() * 1000)
                         class_name = str(self.model.names[detected_object_index])
-                        tracked_objects.append(
-                            AnomalyDetectionResult(
-                                timestamp=timestamp,
-                                source=self.source_url,
-                                class_name=class_name,
-                                confidence=confidence
+                        if class_name == "person":
+                            start_timestamp: int = int(datetime.now().timestamp() * 1000)
+                            frame_directory = Settings.ABS_TRIMMED_FRAME_DIR
+                            if not os.path.exists(frame_directory):
+                                os.makedirs(frame_directory)
+                            tracked_objects.append(
+                                AnomalyDetectionResult(
+                                    start_timestamp=start_timestamp,
+                                    source=self.source_url,
+                                    class_name=class_name,
+                                    confidence=confidence
+                                )
                             )
-                        )
             return tracked_objects
         except Exception as e:
             error = f"Error: {e}"

@@ -1,4 +1,5 @@
 model
-train_data
 videos
 yaml
+train_data
+train.ipynb

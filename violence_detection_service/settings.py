@@ -14,5 +14,9 @@ def get_yaml_path():
 
 
 def get_video_path():
-    abs_video_path = os.path.join(os.getcwd(), "videos/acccc.mp4")
+    abs_video_path = os.path.join(os.getcwd(), "videos/person4.mp4")
     return abs_video_path
+
+
+class Settings:
+    ABS_TRIMMED_FRAME_DIR = "/Users/anishkamukherjee/Documents/nymna/trimmed_frame"

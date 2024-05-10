@@ -9,8 +9,8 @@ if not cap.isOpened():
     print("Error: Could not open video file.")
     exit()
 
-train_path = os.path.join(os.getcwd(), "train_data/images/train")
-val_path = os.path.join(os.getcwd(), "train_data/images/val")
+train_path = os.path.join(os.getcwd(), "a/images/train")
+val_path = os.path.join(os.getcwd(), "a/images/val")
 os.makedirs(train_path, exist_ok=True)
 os.makedirs(val_path, exist_ok=True)
 
