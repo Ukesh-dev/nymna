@@ -1,0 +1,19 @@
+path: /Users/anishkamukherjee/Documents/nymna/train_data
+train: /Users/anishkamukherjee/Documents/nymna/train_data/images/train
+val: Users/anishkamukherjee/Documents/nymna/train_data/images/val
+
+nc: 11
+
+names:
+  0: person
+  1: bicycle
+  2: car
+  3: motorcycle
+  4: airplane
+  5: bus
+  6: train
+  7: truck
+  43: knife
+  8: minor
+  9: mediocre
+  10: severe
