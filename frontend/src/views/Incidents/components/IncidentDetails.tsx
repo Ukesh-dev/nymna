@@ -1,4 +1,3 @@
-import { PaperClipIcon } from "@heroicons/react/24/outline";
 import ReactPlayer from "react-player";
 
 const products = [
@@ -35,30 +34,6 @@ const IncidentDetails = () => {
                 Margot Foster
               </dd>
             </div>
-            {/* <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-white">
-                Application for
-              </dt>
-              <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-                Backend Developer
-              </dd>
-            </div> */}
-            {/* <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-white">
-                Email address
-              </dt>
-              <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-                margotfoster@example.com
-              </dd>
-            </div> */}
-            {/* <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-white">
-                Salary expectation
-              </dt>
-              <dd className="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
-                $120,000
-              </dd>
-            </div> */}
             <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6 text-white">
                 About
@@ -85,11 +60,11 @@ const IncidentDetails = () => {
                     {products.map((product) => (
                       <div key={product.id} className="group relative">
                         <div className="min-h-80 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-900 lg:aspect-none group-hover:opacity-75 lg:h-80">
-                          <img
+                          {/* <img
                             src={product.imageSrc}
                             alt={product.imageAlt}
                             className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                          />
+                          /> */}
                         </div>
                         <div className="mt-4 flex justify-between">
                           <div>
@@ -116,66 +91,6 @@ const IncidentDetails = () => {
                 </div>
               </div>
             </div>
-            {/* <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-white">
-                Attachments
-              </dt>
-              <dd className="mt-2 text-sm text-white sm:col-span-2 sm:mt-0">
-                <ul
-                  role="list"
-                  className="divide-y divide-white/10 rounded-md border border-white/20"
-                >
-                  <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                    <div className="flex w-0 flex-1 items-center">
-                      <PaperClipIcon
-                        className="h-5 w-5 flex-shrink-0 text-gray-400"
-                        aria-hidden="true"
-                      />
-                      <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                        <span className="truncate font-medium">
-                          resume_back_end_developer.pdf
-                        </span>
-                        <span className="flex-shrink-0 text-gray-400">
-                          2.4mb
-                        </span>
-                      </div>
-                    </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <a
-                        href="#"
-                        className="font-medium text-indigo-400 hover:text-indigo-300"
-                      >
-                        Download
-                      </a>
-                    </div>
-                  </li>
-                  <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                    <div className="flex w-0 flex-1 items-center">
-                      <PaperClipIcon
-                        className="h-5 w-5 flex-shrink-0 text-gray-400"
-                        aria-hidden="true"
-                      />
-                      <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                        <span className="truncate font-medium">
-                          coverletter_back_end_developer.pdf
-                        </span>
-                        <span className="flex-shrink-0 text-gray-400">
-                          4.5mb
-                        </span>
-                      </div>
-                    </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <a
-                        href="#"
-                        className="font-medium text-indigo-400 hover:text-indigo-300"
-                      >
-                        Download
-                      </a>
-                    </div>
-                  </li>
-                </ul>
-              </dd>
-            </div> */}
           </dl>
         </div>
       </div>
