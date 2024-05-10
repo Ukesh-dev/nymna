@@ -15,10 +15,10 @@ import { EllipsisVertical, PencilIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const statuses = {
-  Minor: "text-green-400 bg-green-400/10",
-  Mediocre: "text-amber-400 bg-amber-400/10",
-  Severe: "text-rose-400 bg-rose-400/10",
+const statuses: Record<string, string> = {
+  Minor: "text-green-600 bg-green-600/10",
+  Mediocre: "text-yellow-400 bg-yellow-400/10",
+  Severe: "text-red-400 bg-red-400/10",
 };
 
 export type IncidentType = {
@@ -35,7 +35,7 @@ export type IncidentType = {
 const activityItems = [
   {
     user: {
-      name: "Michael Foster",
+      name: "Aniskha Mukherjee",
     },
     commit: "2d89f0c8",
     branch: "main",
@@ -46,7 +46,7 @@ const activityItems = [
   },
   {
     user: {
-      name: "Lindsay Walton",
+      name: "Ram Chandra Katwal",
     },
     commit: "249df660",
     branch: "main",
@@ -57,7 +57,7 @@ const activityItems = [
   },
   {
     user: {
-      name: "Courtney Henry",
+      name: "Pramod Subedi",
     },
     commit: "11464223",
     branch: "main",
@@ -79,7 +79,7 @@ const activityItems = [
   },
   {
     user: {
-      name: "Michael Foster",
+      name: "Bishal Pokhrel",
     },
     commit: "624bc94c",
     branch: "main",
@@ -90,7 +90,7 @@ const activityItems = [
   },
   {
     user: {
-      name: "Courtney Henry",
+      name: "Saraswoti Pokhrel",
     },
     commit: "e111f80e",
     branch: "main",
@@ -153,7 +153,7 @@ export default function IncidentTable() {
           <div
             className={classNames(
               statuses[original.row.original.status],
-              "flex-none rounded-full p-1",
+              "flex-none rounded-full p-1"
             )}
           >
             <div className="h-1.5 w-1.5 rounded-full bg-current" />
@@ -251,7 +251,7 @@ export default function IncidentTable() {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                   </th>
                 );
