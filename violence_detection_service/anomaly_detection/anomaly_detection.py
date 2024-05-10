@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+import requests
 
 import cv2
 from ultralytics import YOLO
@@ -44,12 +45,16 @@ class AnomalyDetection:
                         tracked_objects.append(
                             AnomalyDetectionResult(
                                 timestamp=timestamp,
-                                source=self.source_url,
-                                class_name=class_name,
+                                # source=self.source_url,
+                                # class_name=class_name,
                                 confidence=confidence
                             )
                         )
             return tracked_objects
+
+        # Request
+        # source, class_name, timestamp, confidence
+
         except Exception as e:
             error = f"Error: {e}"
             return error
