@@ -8,7 +8,7 @@ const Home = () => {
         <div className="mx-auto max-w-2xl py-16 sm:py-48 lg:py-[8rem]">
           <div className="hidden sm:mb-4 sm:flex sm:justify-center">
             <div className="relative  rounded-full px-3   text-[16px] leading-6 text-white ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-              Insuring wellness and safety through AI.{" "}
+            Pioneering Real-Time Security and Response    {" "}
               <a href="#" className="font-semibold text-indigo-600">
                 {/* <span className="absolute inset-0" aria-hidden="true" />
                 Read more <span aria-hidden="true">&rarr;</span> */}
@@ -17,12 +17,12 @@ const Home = () => {
           </div>
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-              IoT Sentinel
+            Enhancing Safety with ML-Driven Surveillance.
             </h1>
             <p className="mt-6 text-lg leading-8 text-white/75">
-              Discover unmatched security and wellness assurance with IoT
-              Sentinel - Your premier solution for total vigilance and peace of
-              mind.
+              Experience unparalleled safety and swift incident response with
+              Nymna Alert, <br/>your trusted partner in maintaining vigilance and
+              ensuring peace of mind.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
@@ -31,12 +31,12 @@ const Home = () => {
               >
                 Analyze
               </Link>
-              <a
-                href="#"
+              <Link
+                to="/incidents"
                 className="text-sm font-semibold leading-6 text-white"
               >
-                Learn more <span aria-hidden="true">→</span>
-              </a>
+                Explore <span aria-hidden="true">→</span>
+                </Link>
             </div>
           </div>
         </div>
