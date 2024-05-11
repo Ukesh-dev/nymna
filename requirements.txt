@@ -59,9 +59,6 @@ txaio==23.1.1
 typing_extensions==4.11.0
 tzdata==2024.1
 ultralytics==8.2.11
-<<<<<<< HEAD
 pydantic~=2.7.1
-=======
 urllib3==2.2.1
 zope.interface==6.3
->>>>>>> 15dda5fc54ae47dfc1ea5cd92631e85e74ac6742
