@@ -14,11 +14,6 @@ from django.core.paginator import Paginator, EmptyPage
 from django.forms.models import model_to_dict
 
 from .onesignal import OneSignalNotification
-
-import cv2
-import asyncio
-import ffmpeg
-import time
 from django.http import StreamingHttpResponse, FileResponse, HttpResponseNotFound
 from django.views.decorators import gzip
 import subprocess
