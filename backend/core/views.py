@@ -192,6 +192,9 @@ class AccidentListView(View):
 
 
 class AnalyzeView(View):
+    def get(self, request):
+        pass
+
     def post(self, request, *args, **kwargs):
         try:
             video_link = kwargs.get('video_link', None)
