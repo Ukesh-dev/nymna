@@ -3,7 +3,8 @@ import { cn } from "../../lib/utils";
 import ReactPlayer from "react-player";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Skeleton from "../../components/ui/Skeleton";
 
 const Analyze = () => {
   const [url, setUrl] = useState("");
@@ -21,12 +22,24 @@ const Analyze = () => {
     queryKey: ['url'],
     queryFn: () => api
   }) */
+  const [loading, setLoading] = useState(false);
 
-    const resizeIframe = (obj: any) => {
-        if(obj){
-            obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
-        }
+  useEffect(() => {
+    if (url && loading === true) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     }
+  }, [loading, url]);
+
+  console.log();
+
+  const resizeIframe = (obj: any) => {
+    if (obj) {
+      obj.style.height =
+        obj.contentWindow.document.documentElement.scrollHeight + "px";
+    }
+  };
 
   return (
     <div className="lg:pl-72 py-12">
@@ -50,22 +63,31 @@ const Analyze = () => {
             <Button
               onClick={() => {
                 if (currrentUrl) {
-                    setUrl(currrentUrl)
-                    // submitMutation.mutate(currrentUrl);
+                  setLoading(true);
+                  setUrl(currrentUrl);
+                  // submitMutation.mutate(currrentUrl);
                 }
               }}
-              className="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white"
+              className="inline-flex mt-2 items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white"
             >
               Start
             </Button>
           </div>
         </Field>
         <div className="mt-8">
-            {
-                url && <iframe style={{
-                    minHeight:"500px"
-                }} width={"100%"} src={`http://127.0.0.1:8000/detect/?url=${url}`} onLoad={resizeIframe}></iframe>
-            }
+          {loading === true && (
+            <Skeleton className="w-full h-[400px] bg-gray-700" />
+          )}
+          {url && loading === false && (
+            <iframe
+              style={{
+                minHeight: "500px",
+              }}
+              width={"100%"}
+              src={`http://127.0.0.1:8000/detect/?url=${url}`}
+              onLoad={resizeIframe}
+            ></iframe>
+          )}
         </div>
       </div>
     </div>

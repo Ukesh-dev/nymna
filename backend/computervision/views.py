@@ -10,21 +10,29 @@ import cv2
 import asyncio
 from PIL import Image
 
+
 # Create your views here.
 class DetectAnamolyView(View):
     def get(self, request, *args, **kwargs):
-        source_url = request.GET.get('url', None)
+        source_url = request.GET.get("url", None)
         if not source_url:
             return HttpResponseNotFound()
 
-        if source_url.startswith("http://localhost:8000") or source_url.startswith("http://127.0.0.1:8000"):
+        if source_url.startswith("http://localhost:8000") or source_url.startswith(
+            "http://127.0.0.1:8000"
+        ):
             if "sifal" in source_url:
-                source_url = "/Users/sureshchand/Desktop/Personal/nymna/backend/static/sifal.mp4"
+                source_url = "/Users/ukeshshrestha/Dev/nymna/backend/static/sifal.mp4"
             elif "maitighar" in source_url:
-                source_url = "/Users/sureshchand/Desktop/Personal/nymna/backend/static/maitighar.mp4"
+                source_url = (
+                    "/Users/ukeshshrestha/Dev/nymna/backend/static/maitighar.mp4"
+                )
 
         anomaly_detection = AnomalyDetection(source_url, classes=["person"], conf=0.5)
-        return StreamingHttpResponse(anomaly_detection.get_frame_trims(), content_type='multipart/x-mixed-replace; boundary=frame')
+        return StreamingHttpResponse(
+            anomaly_detection.get_frame_trims(),
+            content_type="multipart/x-mixed-replace; boundary=frame",
+        )
 
 
 class PlayerView(View):
@@ -36,17 +44,19 @@ class PlayerView(View):
                 continue
 
             # Convert the frame to JPEG format
-            ret, buffer = cv2.imencode('.jpg', frame)
+            ret, buffer = cv2.imencode(".jpg", frame)
             frame_bytes = buffer.tobytes()
 
             # Yield the frame for streaming
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+            yield (
+                b"--frame\r\n"
+                b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
+            )
 
             await asyncio.sleep(0.05)
 
     async def get(self, request, *args, **kwargs):
-        folder_name = kwargs.pop('folder', None)
+        folder_name = kwargs.pop("folder", None)
         if not folder_name:
             return HttpResponseNotFound()
 
@@ -54,6 +64,13 @@ class PlayerView(View):
         if not os.path.exists(folder_path):
             return HttpResponseNotFound()
 
-        image_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+        image_files = [
+            os.path.join(folder_path, f)
+            for f in os.listdir(folder_path)
+            if os.path.isfile(os.path.join(folder_path, f))
+        ]
         sorted_files = sorted(image_files, key=lambda x: os.path.getctime(x))
-        return StreamingHttpResponse(self.stream_images(sorted_files), content_type='multipart/x-mixed-replace; boundary=frame')
+        return StreamingHttpResponse(
+            self.stream_images(sorted_files),
+            content_type="multipart/x-mixed-replace; boundary=frame",
+        )

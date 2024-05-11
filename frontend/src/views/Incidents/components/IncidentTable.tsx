@@ -12,6 +12,7 @@ import { DataTablePagination } from "./TablePagination";
 import { getIncidents } from "../../../api/incidentsApi";
 import { cn } from "../../../lib/utils";
 import { useIncident } from "../../../store/useIncident";
+import { parseISO, format } from "date-fns";
 
 const statuses: Record<string, string> = {
   normal: "text-green-400 bg-green-400/10",
@@ -48,12 +49,30 @@ export default function IncidentTable() {
       ),
     },
     {
+      accessorKey: "timestamps",
+      header: "TimeStamp",
+      cell: ({ row }) => {
+        console.log(row.original.timestamp_start);
+        const date = new Date(row.original.timestamp_start);
+        // console.log("👽 date:", date);
+        // return date
+        console.log(typeof date);
+        const formattedDate = format(date, "dd/MM/yyyy");
+        console.log(formattedDate);
+        return `${formattedDate} ${format(date, "kk:mm:ss")}`;
+      },
+    },
+    {
       cell: (originalRow) => {
         return (
           <div className="flex items-center gap-2">
             <span></span>
-            <div>
-              <input className="bg-transparent border-none" value={originalRow.row.original.source} />
+            <div className="max-w-[180px] text-ellipsis overflow-hidden">
+              <span className="">{originalRow.row.original.source}</span>
+              {/* <input
+                className="bg-transparent border-none"
+                value={originalRow.row.original.source}
+              /> */}
             </div>
           </div>
         );
