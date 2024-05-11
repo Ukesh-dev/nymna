@@ -1,11 +1,12 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { HomeIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Siren } from "lucide-react";
+import { Siren, Sparkle } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navigation = [
-  { name: "Analyze", href: "", icon: HomeIcon, current: true },
+  { name: "Home", href: "", icon: HomeIcon, current: true },
+  { name: "Analyze", href: "analyze", icon: Sparkle, current: true },
   { name: "Incidents", href: "incidents", icon: Siren, current: false },
 ];
 
