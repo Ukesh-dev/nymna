@@ -1,7 +1,34 @@
+import Dialogs from "../components/ui/Dialogs";
 import { Outlet } from "react-router-dom";
 import MainNav from "../components/MainNav";
+import { useEffect } from "react";
+import { useIncident } from "../store/useIncident";
+import { IncidentType } from "../views/Incidents/components/IncidentTable";
 
 const IndexPage = () => {
+  const { open, setOpen, message, setMessage, currentData, setCurrentData } =
+    useIncident();
+
+  useEffect(() => {
+    const websocket = new WebSocket("ws://127.0.0.1:8000/report/alert/");
+    websocket.onopen = () => {
+      console.log("connection established");
+    };
+    websocket.onclose = () => {
+      console.log("connection closed");
+    };
+    websocket.onmessage = (event) => {
+      const events = JSON.parse(event.data) as IncidentType;
+      console.log(events, "events");
+      // const queryKey = [events.data.id, ]
+      setCurrentData([...events.data, ...currentData]);
+      setMessage(events.data[0].id);
+      setOpen(true);
+    };
+    () => {
+      websocket.close();
+    };
+  }, []);
   return (
     <>
       <div className="relative min-h-screen isolate overflow-hidden bg-gray-900">
@@ -48,6 +75,14 @@ const IndexPage = () => {
         </div>
         <MainNav />
         <Outlet />
+
+        <Dialogs
+          message={message}
+          open={open}
+          setOpen={(open: boolean) => {
+            setOpen(open);
+          }}
+        />
       </div>
     </>
   );

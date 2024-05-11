@@ -14,6 +14,7 @@ import api from "../../../api";
 import { DataTablePagination } from "./TablePagination";
 import { getIncidents } from "../../../api/incidentsApi";
 import { cn } from "../../../lib/utils";
+import { useIncident } from "../../../store/useIncident";
 
 const statuses: Record<string, string> = {
   minor: "text-green-400 bg-green-400/10",
@@ -29,6 +30,7 @@ export type IncidentType = {
     id: number;
     source: string;
     confidence: number;
+    video: string;
     status: "minor" | "mideocre" | "servere";
     timestamp_start: number;
     timestamp_end: number;
@@ -42,7 +44,7 @@ function classNames(...classes: string[]) {
 type Types = IncidentType["data"];
 
 export default function IncidentTable() {
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const columns: ColumnDef<IncidentType["data"][number]>[] = [
     {
@@ -140,12 +142,15 @@ export default function IncidentTable() {
       },
     },
   ];
-  const [data, setData] = useState<IncidentType | null>(null);
-  const [currentData, setCurrentData] = useState<IncidentType["data"]>([]);
+  // const [data, setData] = useState<IncidentType | null>(null);
+  // const [currentData, setCurrentData] = useState<IncidentType["data"]>([]);
   /* const { data } = useQuery({
     queryKey: ["incidents"],
     queryFn: () => api.get<IncidentType[]>("/api"),
   }); */
+
+  const { message, open, setOpen, data, currentData, setData, setCurrentData } =
+    useIncident();
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -167,29 +172,8 @@ export default function IncidentTable() {
     [pageIndex, pageSize],
   );
 
-  const [message, setMessage] = useState<number | null>(null);
+  // const [message, setMessage] = useState<number | null>(null);
   console.log("👽 message:", message);
-
-  useEffect(() => {
-    const websocket = new WebSocket("ws://127.0.0.1:8000/report/alert/");
-    websocket.onopen = () => {
-      console.log("connection established");
-    };
-    websocket.onclose = () => {
-      console.log("connection closed");
-    };
-    websocket.onmessage = (event) => {
-      const events = JSON.parse(event.data) as IncidentType;
-      console.log(events, "events");
-      // const queryKey = [events.data.id, ]
-      setCurrentData((prev) => [...events.data, ...prev]);
-      setMessage(events.data[0].id);
-      setOpen(true);
-    };
-    () => {
-      websocket.close();
-    };
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -201,7 +185,7 @@ export default function IncidentTable() {
         // data.data.data
         console.log(data.data.data[0].confidence);
         setData(data.data);
-        setCurrentData((prev) => [...data.data.data, ...prev]);
+        setCurrentData([...data.data.data, ...currentData]);
       } catch (err) {
         console.log(err);
       }
@@ -209,14 +193,14 @@ export default function IncidentTable() {
     if (currentData.length === 0) {
       fetchData();
     }
-  }, [currentData.length, fetchDataOptions]);
+  }, [currentData, fetchDataOptions, setCurrentData, setData]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // const data = await api.get<IncidentType>("/reports/");
         const data = await getIncidents<IncidentType>(fetchDataOptions);
-        setCurrentData(() => [...data.data.data]);
+        setCurrentData([...data.data.data]);
         // data.data.data
       } catch (err) {
         console.log(err);
@@ -225,7 +209,7 @@ export default function IncidentTable() {
     if (currentData.length > 0) {
       fetchData();
     }
-  }, [currentData.length, fetchDataOptions]);
+  }, [currentData.length, fetchDataOptions, setCurrentData]);
 
   const table = useReactTable({
     data: currentData ?? [],
@@ -306,13 +290,6 @@ export default function IncidentTable() {
       </table>
 
       <DataTablePagination table={table} />
-      <Dialogs
-        message={message}
-        open={open}
-        setOpen={(open: boolean) => {
-          setOpen(open);
-        }}
-      />
     </div>
   );
 }
