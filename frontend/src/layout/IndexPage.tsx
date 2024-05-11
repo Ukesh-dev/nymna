@@ -24,6 +24,7 @@ const IndexPage = () => {
       setCurrentData([...events.data, ...currentData]);
       setMessage(events.data[0].id);
       setOpen(true);
+      document.title = "Alert!!!";
     };
     () => {
       websocket.close();

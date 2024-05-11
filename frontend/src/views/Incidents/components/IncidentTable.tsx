@@ -8,9 +8,6 @@ import {
 import { Button } from "@headlessui/react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Dialogs from "../../../components/ui/Dialogs";
-import { useQuery } from "@tanstack/react-query";
-import api from "../../../api";
 import { DataTablePagination } from "./TablePagination";
 import { getIncidents } from "../../../api/incidentsApi";
 import { cn } from "../../../lib/utils";
@@ -36,39 +33,26 @@ export type IncidentType = {
     timestamp_end: number;
   }[];
 };
-const activityItems: IncidentType[] = [];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
-type Types = IncidentType["data"];
 
 export default function IncidentTable() {
-  // const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const columns: ColumnDef<IncidentType["data"][number]>[] = [
     {
       header: "S.N",
       cell: (originalRow) => <span>{originalRow.row.index + 1}.</span>,
-      // footer: () => <span>Total</span>,
     },
     {
-      // accessorFn: (originalRow) => {
-      //   return originalRow.employee;
-      // },
       cell: (originalRow) => {
         return (
           <div className="flex items-center gap-2">
-            <span>
-              {/* <Avatar> */}
-              {/*   <AvatarFallback></AvatarFallback> */}
-              {/* </Avatar> */}
-            </span>
+            <span></span>
             <div>
               <span>{originalRow.row.original.source}</span>
-              {/* <span className="block font-light text-xs">APEM</span> */}
             </div>
-            {/* <CalendarModal calendarInfo={originalRow.row.original.employee} /> */}
           </div>
         );
       },
@@ -81,12 +65,6 @@ export default function IncidentTable() {
       header: "Status",
       cell: (original) => (
         <div className="flex items-center justify-end gap-x-2 sm:justify-start">
-          {/* <time
-            className="text-gray-400 sm:hidden"
-            dateTime={original.row.original.dateTime}
-          >
-            {original.row.original.data.status}
-          </time> */}
           <div
             className={classNames(
               statuses[original.row.original.status],
@@ -120,14 +98,12 @@ export default function IncidentTable() {
               )}
               style={{ width: `${original.row.original.confidence * 100}%` }}
             ></div>
-            {/* <span>{original.row.original.confidence}</span>, */}
           </div>
         );
       },
     },
     {
       id: "actions",
-      // cell: ({ row }) => <DataTableRowActions row={row} />,
       cell: (original) => {
         return (
           <Button
@@ -142,15 +118,8 @@ export default function IncidentTable() {
       },
     },
   ];
-  // const [data, setData] = useState<IncidentType | null>(null);
-  // const [currentData, setCurrentData] = useState<IncidentType["data"]>([]);
-  /* const { data } = useQuery({
-    queryKey: ["incidents"],
-    queryFn: () => api.get<IncidentType[]>("/api"),
-  }); */
 
-  const { message, open, setOpen, data, currentData, setData, setCurrentData } =
-    useIncident();
+  const { data, currentData, setData, setCurrentData } = useIncident();
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -172,13 +141,9 @@ export default function IncidentTable() {
     [pageIndex, pageSize],
   );
 
-  // const [message, setMessage] = useState<number | null>(null);
-  console.log("👽 message:", message);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const data = await api.get<IncidentType>("/reports/");
         const data = await getIncidents<IncidentType>(fetchDataOptions);
         console.log(data.data, "datas");
         console.log(data.data);
@@ -198,10 +163,8 @@ export default function IncidentTable() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const data = await api.get<IncidentType>("/reports/");
         const data = await getIncidents<IncidentType>(fetchDataOptions);
         setCurrentData([...data.data.data]);
-        // data.data.data
       } catch (err) {
         console.log(err);
       }
@@ -218,13 +181,9 @@ export default function IncidentTable() {
     autoResetPageIndex: false,
     autoResetExpanded: true,
 
-    // filterFns: {
-    //   myFilter: fuzzyFilter,
-    // },
     state: {
       pagination: pagination,
     },
-    // getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
@@ -236,13 +195,6 @@ export default function IncidentTable() {
         Latest incident
       </h2>
       <table className="mt-6 w-full whitespace-nowrap text-left">
-        {/* <colgroup> */}
-        {/*   <col className="w-full sm:w-4/12" /> */}
-        {/*   <col className="lg:w-4/12" /> */}
-        {/*   <col className="lg:w-2/12" /> */}
-        {/*   <col className="lg:w-1/12" /> */}
-        {/*   <col className="lg:w-1/12" /> */}
-        {/* </colgroup> */}
         <thead className="border-b border-white/10 text-sm leading-6 text-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
