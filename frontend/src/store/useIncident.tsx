@@ -10,6 +10,7 @@ export const useIncident = create<{
   setCurrentData: (currentData: IncidentType["data"]) => void;
   message: { id: number; status: string } | null;
   setMessage: (message: { id: number; status: string }) => void;
+  // notificationType: 'first'
 }>((set) => ({
   open: false,
   setOpen: (open) => {

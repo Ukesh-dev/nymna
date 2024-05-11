@@ -12,14 +12,11 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core.paginator import Paginator, EmptyPage
 from django.forms.models import model_to_dict
+
 from .onesignal import OneSignalNotification
-
-import cv2
-import asyncio
-import time
-from django.http import StreamingHttpResponse, HttpResponse, HttpResponseNotFound
+from django.http import StreamingHttpResponse, FileResponse, HttpResponseNotFound
 from django.views.decorators import gzip
-
+import subprocess
 
 @method_decorator(csrf_exempt, name="dispatch")
 class SingleRecordView(View):
@@ -59,7 +56,7 @@ class SingleRecordView(View):
 
         report_data = model_to_dict(report)
         if report.video:
-            report_data["video"] = f"http://127.0.0.1:8000/static/{report.video}"
+            report_data["video"] = f"http://127.0.0.1:8000/player/{report.video}"
 
         return JsonResponse({
             "success": True,
@@ -91,7 +88,7 @@ class AccidentListView(View):
 
         total_pages = 1
         output = []
-        all_reports = Report.objects.all()
+        all_reports = Report.objects.all().order_by('-id')
         total_count = all_reports.count()
         if total_count > 0:
             try:
@@ -102,7 +99,7 @@ class AccidentListView(View):
                 for report in reports:
                     report_data = model_to_dict(report)
                     if report.video:
-                        report_data["video"] = f"http://127.0.0.1:8000/static/{report.video}"
+                        report_data["video"] = f"http://127.0.0.1:8000/player/{report.video}"
 
                     output.append(
                         report_data
@@ -168,7 +165,7 @@ class AccidentListView(View):
             channel_layer = get_channel_layer()
             report_data = model_to_dict(report)
             if report.video:
-                report_data["video"] = f"http://127.0.0.1:8000/static/{report.video}"
+                report_data["video"] = f"http://127.0.0.1:8000/player/{report.video}"
 
             OneSignalNotification.send({
                 "title": "Incident Alert!!!",
@@ -232,36 +229,41 @@ def stream_video(request):
     return HttpResponseNotFound()
 
 
+import os
+import cv2
+import asyncio
+from django.http import StreamingHttpResponse
+from django.views import View
+
 class StreamVideoView(View):
+    def __init__(self):
+        super().__init__()
+        self.video_path=None
+        self.cap=None
+        self.frame_rate=None
+
+    def get_frame_rate(self):
+        return self.cap.get(cv2.CAP_PROP_FPS)
 
     async def stream_video(self):
-        video_path = os.path.join(BASE_DIR, "static", "video.mp4")
-        cap = cv2.VideoCapture(video_path)
-
-        while True:
-            success, frame = cap.read()
+        while self.cap.isOpened():
+            success, frame = self.cap.read()
             if not success:
                 break
 
             # Convert the frame to JPEG format
             ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
+            frame_bytes = buffer.tobytes()
 
+            # Yield the frame for streaming
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            await asyncio.sleep(0.09)
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+            await asyncio.sleep(1 / self.frame_rate)
 
     async def get(self, request, *args, **kwargs):
+        video_type = kwargs.pop('video_type', "video")
+        self.video_path = os.path.join(BASE_DIR, "static", f"{video_type}.mp4")
+        self.cap = cv2.VideoCapture(self.video_path)
+        self.frame_rate = self.get_frame_rate()
         return StreamingHttpResponse(self.stream_video(), content_type='multipart/x-mixed-replace; boundary=frame')
-
-
-class PredictVideoView(View):
-    def get(self, request, *args, **kwargs):
-        input_url = request.GET.get("url", None)
-        if not input_url:
-            raise Exception("Predict URL is undefined")
-        return JsonResponse({
-            "success": True,
-            "path": input_url
-        })
-

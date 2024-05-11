@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Custom apps
-    'core'
+    'core',
+    'computervision'
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 APPEND_SLASH = True
+
+X_FRAME_OPTIONS = 'ALLOWALL'
+XS_SHARING_ALLOWED_METHODS = ['POST','GET','OPTIONS', 'PUT', 'DELETE']

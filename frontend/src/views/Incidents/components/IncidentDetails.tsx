@@ -74,11 +74,14 @@ const IncidentDetails = () => {
                     {data.data.data.status}
                   </dd>
                 </div>
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                <div className="px-4 py-6">
                   {data.data.data.video && (
-                    <ReactPlayer
-                      controls
-                      url="https://vz-e489fdd9-1a4.b-cdn.net/864b6eca-c46f-4e3e-9b64-22b15d7736d4/play_720p.mp4"
+                    <iframe
+                      src={data.data.data.video}
+                      style={{
+                        width:"100%",
+                        minHeight:"600px"
+                      }}
                     />
                   )}
                 </div>
