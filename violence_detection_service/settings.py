@@ -3,7 +3,7 @@ import os
 
 def get_model_path():
     root_path = os.getcwd()
-    abs_model_path = os.path.join(root_path, 'model/yolov8l.pt')
+    abs_model_path = os.path.join(root_path, 'model/yolov8s.pt')
     return abs_model_path
 
 
@@ -19,4 +19,5 @@ def get_video_path():
 
 
 class Settings:
-    ABS_TRIMMED_FRAME_DIR = "/Users/anishkamukherjee/Documents/nymna/trimmed_frame"
+    ABS_TRIMMED_FRAME_DIR = "/Users/anishkamukherjee/Documents/nymna/violence_detection_service/trimmed_frame"
+    ABS_TRIMMED_FRAME_PATH = "/Users/anishkamukherjee/Documents/nymna/violence_detection_service/trimmed_frames"

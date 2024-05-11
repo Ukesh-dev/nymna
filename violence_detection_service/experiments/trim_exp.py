@@ -30,6 +30,7 @@ def test():
                         if not os.path.exists("trimmed_video"):
                             os.makedirs("trimmed_video")
                         cv2.imwrite(f"frame_trimmed_video_{class_name}_{frame_count}.jpg", frame)
+                        frame_count += 1
     except Exception as e:
         print(e)
 
