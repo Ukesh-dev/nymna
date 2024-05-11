@@ -43,7 +43,9 @@ export default function IncidentTable() {
   const columns: ColumnDef<IncidentType["data"][number]>[] = [
     {
       header: "S.N",
-      cell: (originalRow) => <span>{originalRow.row.index + 1}.</span>,
+      cell: (originalRow) => (
+        <span className="pl-2">{originalRow.row.index + 1}.</span>
+      ),
     },
     {
       cell: (originalRow) => {
@@ -84,7 +86,7 @@ export default function IncidentTable() {
       header: "Incident Confidence",
       cell: (original) => {
         return (
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 pl-2 items-center">
             <div className="relative  min-w-[150px] max-w-[150px] bg-gray-600 h-1">
               <div
                 className={cn(
@@ -224,7 +226,7 @@ export default function IncidentTable() {
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8 text-white"
+                    className="py-4  pr-8 sm:pl-6 lg:pl-6 text-white"
                     key={cell.id}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
