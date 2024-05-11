@@ -20,7 +20,6 @@ const IndexPage = () => {
     websocket.onmessage = (event) => {
       const events = JSON.parse(event.data) as IncidentType;
       console.log(events, "events");
-      // const queryKey = [events.data.id, ]
       setCurrentData([...events.data, ...currentData]);
       setMessage(events.data[0].id);
       setOpen(true);

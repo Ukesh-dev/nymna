@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef } from "react";
 import { Button, Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
@@ -12,8 +12,6 @@ export default function Dialogs({
   message: number | null;
   setOpen: (e: boolean) => void;
 }) {
-  // const [open, setOpen] = useState(true);
-
   const cancelButtonRef = useRef(null);
 
   const navigate = useNavigate();
