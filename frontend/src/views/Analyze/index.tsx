@@ -1,7 +1,7 @@
 import { Button, Description, Field, Input, Label } from "@headlessui/react";
 import { cn } from "../../lib/utils";
 import ReactPlayer from "react-player";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "../../api";
 import { useState } from "react";
 
@@ -17,6 +17,10 @@ const Analyze = () => {
       setCurrentUrl(null);
     },
   });
+  /* const {data} = useQuery({
+    queryKey: ['url'],
+    queryFn: () => api
+  }) */
   return (
     <div className="lg:pl-72 py-12">
       <div className="w-full mx-auto max-w-2xl px-4">
@@ -47,7 +51,7 @@ const Analyze = () => {
             </Button>
           </div>
         </Field>
-        {url && <ReactPlayer url={url} />}
+        <ReactPlayer controls url="http://localhost:8000/video" />
       </div>
     </div>
   );

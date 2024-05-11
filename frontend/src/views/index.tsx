@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <div className="lg:pl-72">
       <div className="relative isolate px-6 pt-14 lg:px-8">
-        <div className="mx-auto max-w-2xl py-16 sm:py-48 lg:py-26">
+        <div className="mx-auto max-w-2xl py-16 sm:py-48 lg:py-[8rem]">
           <div className="hidden sm:mb-4 sm:flex sm:justify-center">
             <div className="relative  rounded-full px-3   text-[16px] leading-6 text-white ring-1 ring-gray-900/10 hover:ring-gray-900/20">
               Insuring wellness and safety through AI.{" "}
