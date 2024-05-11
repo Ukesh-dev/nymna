@@ -9,6 +9,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core.paginator import Paginator, EmptyPage
 from django.forms.models import model_to_dict
+from .onesignal import OneSignalNotification
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -159,6 +160,12 @@ class AccidentListView(View):
             report_data = model_to_dict(report)
             if report.video:
                 report_data["video"] = f"http://127.0.0.1:8000/static/{report.video}"
+
+            OneSignalNotification.send({
+                "title": "Incident Alert!!!",
+                "message": "There has been an incident",
+                "data": report_data
+            })
 
             async_to_sync(channel_layer.group_send)(
                 "notification",
