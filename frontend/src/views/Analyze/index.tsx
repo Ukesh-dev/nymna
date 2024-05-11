@@ -51,7 +51,9 @@ const Analyze = () => {
             </Button>
           </div>
         </Field>
-        <ReactPlayer controls url="http://localhost:8000/video" />
+        <div className="mt-8">
+          <ReactPlayer controls url="http://localhost:8000/video" />
+        </div>
       </div>
     </div>
   );
