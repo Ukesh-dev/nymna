@@ -16,19 +16,22 @@ const IndexPage = () => {
     websocket.onmessage = (event) => {
       const events = JSON.parse(event.data) as IncidentType;
       setCurrentData([...events.data, ...currentData]);
-      setMessage(events.data[0].id);
+      setMessage({ id: events.data[0].id, status: events.data[0].status });
       setOpen(true);
-      document.title = "Alert!!!";
     };
     () => {
       websocket.close();
     };
   }, []);
+
+  useEffect(() => {
+    document.title = open ? "Alert!!!" : "Incidents";
+  }, [open]);
   return (
     <>
-      <div className="relative min-h-screen isolate overflow-hidden bg-gray-900">
+      <div className="relative min-h-screen isolate overflow-hidden  bg-gray-900">
         <svg
-          className="absolute inset-0 -z-10 h-full w-full stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+          className="absolute left-60 right-0 top-0 bottom-0 -z-10 h-full w-full stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
           aria-hidden="true"
         >
           <defs>

@@ -2,6 +2,7 @@ import { Fragment, useRef } from "react";
 import { Button, Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { cn } from "../../lib/utils";
 
 export default function Dialogs({
   open,
@@ -9,7 +10,7 @@ export default function Dialogs({
   message,
 }: {
   open: boolean;
-  message: number | null;
+  message: { id: number; status: string } | null;
   setOpen: (e: boolean) => void;
 }) {
   const cancelButtonRef = useRef(null);
@@ -48,7 +49,7 @@ export default function Dialogs({
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               {/* w-full max-w-md rounded-xl bg-white/5 p-6 backdrop-blur-2xl */}
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg  text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+              <Dialog.Panel className="relative transform overflow-hidden  rounded-lg  text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div className="bg-gray-900/75 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
                     <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -68,6 +69,19 @@ export default function Dialogs({
                         <p className="text-[1rem] text-white/85">
                           There has been an incident!!!{" "}
                         </p>
+
+                        <p
+                          className={cn(
+                            " p-0 inline-flex mt-4 items-center rounded-[.5rem] bg-green-50 px-2 py-1 text-[14px] font-medium capitalize text-green-700 ring-1 ring-inset ring-green-600/20",
+                            message?.status === "minor"
+                              ? "text-green-700 ring-green-600/20 bg-green-100 "
+                              : message?.status === "mediocre"
+                                ? "text-amber-700 ring-amber-600/20 bg-amber-100 "
+                                : "text-red-700 ring-red-600/20 bg-red-100 ",
+                          )}
+                        >
+                          Status: {message?.status}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -77,11 +91,11 @@ export default function Dialogs({
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                     onClick={() => {
-                      navigate(`/incidents/${message}`);
+                      navigate(`/incidents/${message?.id}`);
                       setOpen(false);
                     }}
                   >
-                    View More
+                    View Details
                   </Button>
                 </div>
               </Dialog.Panel>

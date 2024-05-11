@@ -8,8 +8,8 @@ export const useIncident = create<{
   setData: (data: IncidentType) => void;
   currentData: IncidentType["data"];
   setCurrentData: (currentData: IncidentType["data"]) => void;
-  message: number | null;
-  setMessage: (message: number) => void;
+  message: { id: number; status: string } | null;
+  setMessage: (message: { id: number; status: string }) => void;
 }>((set) => ({
   open: false,
   setOpen: (open) => {

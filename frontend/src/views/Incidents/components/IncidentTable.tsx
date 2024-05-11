@@ -81,22 +81,27 @@ export default function IncidentTable() {
     },
     {
       accessorKey: "confidence",
-      header: "Confidence",
+      header: "Incident Confidence",
       cell: (original) => {
         return (
-          <div className="relative min-w-[80px] bg-gray-600 h-1">
-            <div
-              className={cn(
-                "absolute  left-0 top-0 h-1",
-                original.row.original.confidence * 100 < 20
-                  ? "bg-red-500"
-                  : original.row.original.confidence * 100 >= 20 &&
-                      original.row.original.confidence * 100 <= 40
-                    ? "bg-amber-500"
-                    : "bg-green-500",
-              )}
-              style={{ width: `${original.row.original.confidence * 100}%` }}
-            ></div>
+          <div className="flex gap-4 items-center">
+            <div className="relative  min-w-[150px] max-w-[150px] bg-gray-600 h-1">
+              <div
+                className={cn(
+                  "absolute  left-0 top-0 h-1",
+                  original.row.original.confidence * 100 < 20
+                    ? "bg-red-500"
+                    : original.row.original.confidence * 100 >= 20 &&
+                        original.row.original.confidence * 100 <= 40
+                      ? "bg-amber-500"
+                      : "bg-green-500",
+                )}
+                style={{ width: `${original.row.original.confidence * 100}%` }}
+              ></div>
+            </div>
+            <span className="text-sm">
+              ({original.row.original.confidence * 100}%)
+            </span>{" "}
           </div>
         );
       },

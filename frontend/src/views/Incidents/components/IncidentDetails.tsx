@@ -44,7 +44,7 @@ const IncidentDetails = () => {
                 </div>
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                   <dt className="text-sm font-medium leading-6 text-white">
-                    Confidence
+                    Incident Confidence
                   </dt>
                   <dd className="mt-1 text-sm leading-6 text-gray-400 flex gap-6 items-center sm:col-span-2 sm:mt-0">
                     <div className="relative min-w-[80px] max-w-[150px]  bg-gray-600 h-1">
