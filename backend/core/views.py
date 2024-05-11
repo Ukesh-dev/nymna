@@ -16,10 +16,11 @@ from .onesignal import OneSignalNotification
 
 import cv2
 import asyncio
+import ffmpeg
 import time
-from django.http import StreamingHttpResponse, HttpResponse, HttpResponseNotFound
+from django.http import StreamingHttpResponse, FileResponse, HttpResponseNotFound
 from django.views.decorators import gzip
-
+import subprocess
 
 @method_decorator(csrf_exempt, name="dispatch")
 class SingleRecordView(View):
@@ -229,24 +230,37 @@ def stream_video(request):
     return HttpResponseNotFound()
 
 
+import os
+import cv2
+import asyncio
+from django.http import StreamingHttpResponse
+from django.views import View
+
 class StreamVideoView(View):
+    def __init__(self):
+        super().__init__()
+        self.video_path = os.path.join(BASE_DIR, "static", "video.mp4")
+        self.cap = cv2.VideoCapture(self.video_path)
+        self.frame_rate = self.get_frame_rate()
+
+    def get_frame_rate(self):
+        return self.cap.get(cv2.CAP_PROP_FPS)
 
     async def stream_video(self):
-        video_path = os.path.join(BASE_DIR, "static", "video.mp4")
-        cap = cv2.VideoCapture(video_path)
-
-        while True:
-            success, frame = cap.read()
+        while self.cap.isOpened():
+            success, frame = self.cap.read()
             if not success:
                 break
 
             # Convert the frame to JPEG format
             ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
+            frame_bytes = buffer.tobytes()
 
+            # Yield the frame for streaming
             yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-            await asyncio.sleep(0.09)
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+            await asyncio.sleep(1 / self.frame_rate)
 
     async def get(self, request, *args, **kwargs):
         return StreamingHttpResponse(self.stream_video(), content_type='multipart/x-mixed-replace; boundary=frame')
@@ -255,10 +269,14 @@ class StreamVideoView(View):
 class PredictVideoView(View):
     def get(self, request, *args, **kwargs):
         input_url = request.GET.get("url", None)
-        if not input_url:
-            raise Exception("Predict URL is undefined")
-        return JsonResponse({
-            "success": True,
-            "path": input_url
-        })
+
+        # if not input_url:
+        #     raise Exception("Predict URL is undefined")
+        #
+        #
+        #
+        # return JsonResponse({
+        #     "success": True,
+        #     "path": input_url
+        # })
 

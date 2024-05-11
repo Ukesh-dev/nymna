@@ -6,7 +6,7 @@ urlpatterns = [
     path("reports/paged/<int:page>/", AccidentListView.as_view(), name="showlistpage"),
     path("report/<int:id>/", SingleRecordView.as_view(), name="singlerecord"),
     path("analyze/", AnalyzeView.as_view(), name="analyze"),
-    path("video", StreamVideoView.as_view(), name="video"),
+    path("video/<str:type>", StreamVideoView.as_view(), name="video"),
     path("detect/", PredictVideoView.as_view(), name="detect")
 ]
 
