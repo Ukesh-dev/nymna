@@ -32,6 +32,6 @@ class Report(models.Model):
         default=0
     )
     status = models.CharField(max_length=255, blank=True, null=True, choices=STATUS_CHOICES)
-    timestamp_start = models.IntegerField(null=True, blank=True)
-    timestamp_end = models.IntegerField(null=True, blank=True)
+    timestamp_start = models.DateTimeField(null=True, blank=True)
+    timestamp_end = models.DateTimeField(null=True, blank=True)
     video = models.CharField(max_length=255, blank=True, null=True)

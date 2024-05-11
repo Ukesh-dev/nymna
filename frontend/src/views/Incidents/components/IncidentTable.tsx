@@ -14,9 +14,9 @@ import { cn } from "../../../lib/utils";
 import { useIncident } from "../../../store/useIncident";
 
 const statuses: Record<string, string> = {
-  minor: "text-green-400 bg-green-400/10",
-  mediocre: "text-amber-400 bg-amber-400/10",
-  severe: "text-rose-400 bg-rose-400/10",
+  normal: "text-green-400 bg-green-400/10",
+  moderate: "text-amber-400 bg-amber-400/10",
+  fatal: "text-rose-400 bg-rose-400/10",
 };
 
 export type IncidentType = {
@@ -53,7 +53,7 @@ export default function IncidentTable() {
           <div className="flex items-center gap-2">
             <span></span>
             <div>
-              <span>{originalRow.row.original.source}</span>
+              <input className="bg-transparent border-none" value={originalRow.row.original.source} />
             </div>
           </div>
         );
