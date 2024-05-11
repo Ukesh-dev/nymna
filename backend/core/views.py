@@ -1,7 +1,10 @@
+import os.path
+
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
 from core.models import Report
+from backend.settings import BASE_DIR
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -10,6 +13,12 @@ from channels.layers import get_channel_layer
 from django.core.paginator import Paginator, EmptyPage
 from django.forms.models import model_to_dict
 from .onesignal import OneSignalNotification
+
+import cv2
+import asyncio
+import time
+from django.http import StreamingHttpResponse, HttpResponse, HttpResponseNotFound
+from django.views.decorators import gzip
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -207,3 +216,49 @@ class AnalyzeView(View):
                 "success": True,
                 "message": str(e)
             }, status=500)
+
+
+# @gzip.gzip_page
+def stream_video(request):
+    video_path = os.path.join(BASE_DIR, 'static', 'video.mp4')  # Adjust the path
+    with open(video_path, 'rb') as f:
+        video_data = f.read(1024)  # Read video data in chunks
+        while video_data:
+            yield video_data
+            video_data = f.read(1024)
+    return HttpResponseNotFound()
+
+
+class StreamVideoView(View):
+
+    async def stream_video(self):
+        video_path = os.path.join(BASE_DIR, "static", "video.mp4")
+        cap = cv2.VideoCapture(video_path)
+
+        while True:
+            success, frame = cap.read()
+            if not success:
+                break
+
+            # Convert the frame to JPEG format
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            await asyncio.sleep(0.09)
+
+    async def get(self, request, *args, **kwargs):
+        return StreamingHttpResponse(self.stream_video(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+class PredictVideoView(View):
+    def get(self, request, *args, **kwargs):
+        input_url = request.GET.get("url", None)
+        if not input_url:
+            raise Exception("Predict URL is undefined")
+        return JsonResponse({
+            "success": True,
+            "path": input_url
+        })
+
