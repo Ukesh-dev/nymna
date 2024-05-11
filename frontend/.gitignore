@@ -1,5 +1,3 @@
-
-node_modules
 # Logs
 logs
 *.log
@@ -8,7 +6,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-.vite
 
 node_modules
 dist
@@ -25,12 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-videos
-model
-__pycache__
-.idea
-.DS_Store
-violence_detection_service/yaml/custom_data.yaml
-violence_detection_service/train.ipynb
-venv/
-__pycache__/

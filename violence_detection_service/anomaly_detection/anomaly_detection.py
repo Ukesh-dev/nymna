@@ -1,6 +1,7 @@
 import os.path
 from datetime import datetime
 from typing import List
+import requests
 
 import cv2
 from ultralytics import YOLO
