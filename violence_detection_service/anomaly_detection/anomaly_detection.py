@@ -14,7 +14,7 @@ class AnomalyDetection:
         self.classes: List[str] = classes
         self.conf: float = conf
         self.source_url = source_url
-        self.model = YOLO("/Users/anishkamukherjee/Documents/nymna/violence_detection_service/model/yolov8s.pt")
+        self.model = YOLO("models/yolov8s.pt")
         self.cap = cv2.VideoCapture(self.source_url)
         self.id2labels = self.model.module.names if hasattr(self.model, 'module') else self.model.names
         self.labels2ids = {label: idx for idx, label in enumerate(self.id2labels)}
