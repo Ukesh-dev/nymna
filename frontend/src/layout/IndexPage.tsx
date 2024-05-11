@@ -11,15 +11,10 @@ const IndexPage = () => {
 
   useEffect(() => {
     const websocket = new WebSocket("ws://127.0.0.1:8000/report/alert/");
-    websocket.onopen = () => {
-      console.log("connection established");
-    };
-    websocket.onclose = () => {
-      console.log("connection closed");
-    };
+    websocket.onopen = () => {};
+    websocket.onclose = () => {};
     websocket.onmessage = (event) => {
       const events = JSON.parse(event.data) as IncidentType;
-      console.log(events, "events");
       setCurrentData([...events.data, ...currentData]);
       setMessage(events.data[0].id);
       setOpen(true);

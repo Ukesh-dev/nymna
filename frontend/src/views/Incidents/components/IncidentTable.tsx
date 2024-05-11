@@ -83,7 +83,6 @@ export default function IncidentTable() {
       accessorKey: "confidence",
       header: "Confidence",
       cell: (original) => {
-        console.log(original.row.original.confidence * 100);
         return (
           <div className="relative min-w-[80px] bg-gray-600 h-1">
             <div
@@ -145,10 +144,7 @@ export default function IncidentTable() {
     const fetchData = async () => {
       try {
         const data = await getIncidents<IncidentType>(fetchDataOptions);
-        console.log(data.data, "datas");
-        console.log(data.data);
         // data.data.data
-        console.log(data.data.data[0].confidence);
         setData(data.data);
         setCurrentData([...data.data.data, ...currentData]);
       } catch (err) {
