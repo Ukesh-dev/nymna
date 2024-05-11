@@ -17,7 +17,7 @@ class AnomalyDetection:
 
     def __init__(self, source_url: str):
         self.source_url = source_url
-        self.model = YOLO("/Users/anishkamukherjee/Documents/nymna/violence_detection_service/model/yolov8s.pt")
+        self.model = YOLO("models/yolov8s.pt")
         self.cap = cv2.VideoCapture(self.source_url)
         self.id2labels = self.model.module.names if hasattr(self.model, 'module') else self.model.names
         self.labels2ids = dict((_label, _id) for _id, _label in self.id2labels.items())
