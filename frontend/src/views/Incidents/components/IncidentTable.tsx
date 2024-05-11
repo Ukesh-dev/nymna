@@ -1,24 +1,30 @@
 import {
   ColumnDef,
+  PaginationState,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { Button } from "@headlessui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Dialogs from "../../../components/ui/Dialogs";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../api";
+import { DataTablePagination } from "./TablePagination";
+import { getIncidents } from "../../../api/incidentsApi";
+import { cn } from "../../../lib/utils";
 
 const statuses: Record<string, string> = {
-  Minor: "text-green-400 bg-green-400/10",
-  Mediocre: "text-amber-400 bg-amber-400/10",
-  Severe: "text-rose-400 bg-rose-400/10",
+  minor: "text-green-400 bg-green-400/10",
+  mediocre: "text-amber-400 bg-amber-400/10",
+  severe: "text-rose-400 bg-rose-400/10",
 };
 
 export type IncidentType = {
   type: "new_alert" | "";
+  current: number;
+  total: number;
   data: {
     id: number;
     source: string;
@@ -26,18 +32,19 @@ export type IncidentType = {
     status: "minor" | "mideocre" | "servere";
     timestamp_start: number;
     timestamp_end: number;
-  };
+  }[];
 };
 const activityItems: IncidentType[] = [];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
+type Types = IncidentType["data"];
 
 export default function IncidentTable() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const columns: ColumnDef<IncidentType>[] = [
+  const columns: ColumnDef<IncidentType["data"][number]>[] = [
     {
       header: "S.N",
       cell: (originalRow) => <span>{originalRow.row.index + 1}.</span>,
@@ -56,7 +63,7 @@ export default function IncidentTable() {
               {/* </Avatar> */}
             </span>
             <div>
-              <span>{originalRow.row.original.data.source}</span>
+              <span>{originalRow.row.original.source}</span>
               {/* <span className="block font-light text-xs">APEM</span> */}
             </div>
             {/* <CalendarModal calendarInfo={originalRow.row.original.employee} /> */}
@@ -69,6 +76,7 @@ export default function IncidentTable() {
 
     {
       accessorKey: "status",
+      header: "Status",
       cell: (original) => (
         <div className="flex items-center justify-end gap-x-2 sm:justify-start">
           {/* <time
@@ -79,14 +87,14 @@ export default function IncidentTable() {
           </time> */}
           <div
             className={classNames(
-              statuses[original.row.original.data.status],
+              statuses[original.row.original.status],
               "flex-none rounded-full p-1",
             )}
           >
             <div className="h-1.5 w-1.5 rounded-full bg-current" />
           </div>
-          <div className="hidden text-white sm:block">
-            {original.row.original.data.status}
+          <div className="hidden capitalize text-white sm:block">
+            {original.row.original.status}
           </div>
         </div>
       ),
@@ -94,7 +102,26 @@ export default function IncidentTable() {
     {
       accessorKey: "confidence",
       header: "Confidence",
-      cell: (original) => <span>{original.row.original.data.confidence}</span>,
+      cell: (original) => {
+        console.log(original.row.original.confidence * 100);
+        return (
+          <div className="relative min-w-[80px] bg-gray-600 h-1">
+            <div
+              className={cn(
+                "absolute  left-0 top-0 h-1",
+                original.row.original.confidence * 100 < 20
+                  ? "bg-red-500"
+                  : original.row.original.confidence * 100 >= 20 &&
+                      original.row.original.confidence * 100 <= 40
+                    ? "bg-amber-500"
+                    : "bg-green-500",
+              )}
+              style={{ width: `${original.row.original.confidence * 100}%` }}
+            ></div>
+            {/* <span>{original.row.original.confidence}</span>, */}
+          </div>
+        );
+      },
     },
     {
       id: "actions",
@@ -103,7 +130,7 @@ export default function IncidentTable() {
         return (
           <Button
             onClick={() => {
-              navigate(`${original.row.original.data.source}`);
+              navigate(`${original.row.original.id}`);
             }}
             className="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white"
           >
@@ -113,11 +140,35 @@ export default function IncidentTable() {
       },
     },
   ];
-  const [data, setData] = useState(() => activityItems);
+  const [data, setData] = useState<IncidentType | null>(null);
+  const [currentData, setCurrentData] = useState<IncidentType["data"]>([]);
   /* const { data } = useQuery({
     queryKey: ["incidents"],
     queryFn: () => api.get<IncidentType[]>("/api"),
   }); */
+
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const fetchDataOptions = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize],
+  );
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize],
+  );
+
+  const [message, setMessage] = useState<number | null>(null);
+  console.log("👽 message:", message);
 
   useEffect(() => {
     const websocket = new WebSocket("ws://127.0.0.1:8000/report/alert/");
@@ -129,8 +180,10 @@ export default function IncidentTable() {
     };
     websocket.onmessage = (event) => {
       const events = JSON.parse(event.data) as IncidentType;
+      console.log(events, "events");
       // const queryKey = [events.data.id, ]
-      setData((prev) => [events, ...prev]);
+      setCurrentData((prev) => [...events.data, ...prev]);
+      setMessage(events.data[0].id);
       setOpen(true);
     };
     () => {
@@ -141,36 +194,57 @@ export default function IncidentTable() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await api.get<IncidentType[]>("/reports/");
-        console.log(data);
+        // const data = await api.get<IncidentType>("/reports/");
+        const data = await getIncidents<IncidentType>(fetchDataOptions);
+        console.log(data.data, "datas");
+        console.log(data.data);
+        // data.data.data
+        console.log(data.data.data[0].confidence);
         setData(data.data);
+        setCurrentData((prev) => [...data.data.data, ...prev]);
       } catch (err) {
         console.log(err);
       }
     };
-    if (data.length === 0) {
+    if (currentData.length === 0) {
       fetchData();
     }
-  }, [data]);
+  }, [currentData.length, fetchDataOptions]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // const data = await api.get<IncidentType>("/reports/");
+        const data = await getIncidents<IncidentType>(fetchDataOptions);
+        setCurrentData(() => [...data.data.data]);
+        // data.data.data
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    if (currentData.length > 0) {
+      fetchData();
+    }
+  }, [currentData.length, fetchDataOptions]);
 
   const table = useReactTable({
-    data: data,
+    data: currentData ?? [],
     columns: columns,
-    // pageCount: dataQuery.data?.total_pages ?? 0,
+    pageCount: data?.total ?? 0,
     autoResetPageIndex: false,
-    // state: {
-    //   pagination: pagination,
-    //   columnFilters: columnFilter,
-    //   sorting,
+    autoResetExpanded: true,
+
+    // filterFns: {
+    //   myFilter: fuzzyFilter,
     // },
-    // onColumnFiltersChange: setColumnFilters,
-    // onSortingChange: setSorting,
-    // onPaginationChange: setPagination,
+    state: {
+      pagination: pagination,
+    },
+    // getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    // manualFiltering: true,
-    // manualPagination: true,
-    // manualSorting: true,
-    // enableMultiSort: true,
+    manualPagination: true,
+    debugTable: true,
   });
   return (
     <div className="bg-gray-transparent py-10 lg:pl-72">
@@ -230,8 +304,10 @@ export default function IncidentTable() {
           )}
         </tbody>
       </table>
+
+      <DataTablePagination table={table} />
       <Dialogs
-        message="hell"
+        message={message}
         open={open}
         setOpen={(open: boolean) => {
           setOpen(open);

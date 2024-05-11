@@ -1,6 +1,7 @@
 import { Fragment, useRef, useState } from "react";
 import { Button, Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 export default function Dialogs({
   open,
@@ -8,13 +9,14 @@ export default function Dialogs({
   message,
 }: {
   open: boolean;
-  message: string;
+  message: number | null;
   setOpen: (e: boolean) => void;
 }) {
   // const [open, setOpen] = useState(true);
 
   const cancelButtonRef = useRef(null);
 
+  const navigate = useNavigate();
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
@@ -76,9 +78,12 @@ export default function Dialogs({
                   <Button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      navigate(`${message}`);
+                      setOpen(false);
+                    }}
                   >
-                    Okay! Got it!
+                    View More
                   </Button>
                 </div>
               </Dialog.Panel>

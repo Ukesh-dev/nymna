@@ -14,7 +14,7 @@ function Routes() {
       <>
         <Route path="/" element={<IndexPage />}>
           <Route path="incidents" element={<Incidents />} />
-          <Route path="incidents/:user" element={<IncidentDetails />} />
+          <Route path="incidents/:incident" element={<IncidentDetails />} />
         </Route>
       </>,
     ),
