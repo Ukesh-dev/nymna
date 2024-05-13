@@ -22,10 +22,10 @@ class DetectAnamolyView(View):
             "http://127.0.0.1:8000"
         ):
             if "sifal" in source_url:
-                source_url = "/Users/ukeshshrestha/Dev/nymna/backend/static/sifal.mp4"
+                source_url = "/Users/sureshchand/Desktop/Personal/nymna/backend/static/sifal.mp4"
             elif "maitighar" in source_url:
                 source_url = (
-                    "/Users/ukeshshrestha/Dev/nymna/backend/static/maitighar.mp4"
+                    "/Users/sureshchand/Desktop/Personal/nymna/backend/static/maitighar.mp4"
                 )
 
         anomaly_detection = AnomalyDetection(source_url, classes=["person"], conf=0.5)

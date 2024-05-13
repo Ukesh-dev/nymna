@@ -21,8 +21,8 @@ def get_video_path():
 
 class Settings:
     ABS_TRIMMED_FRAME_DIR = (
-        "/Users/ukeshshrestha/Dev/nymna/backend/computervision/trimmed_frame"
+        "/Users/sureshchand/Desktop/Personal/nymna/backend/computervision/trimmed_frame"
     )
     ABS_TRIMMED_FRAME_PATH = (
-        "/Users/ukeshshrestha/Dev/nymna/backend/computervision/trimmed_frames"
+        "/Users/sureshchand/Desktop/Personal/nymna/backend/computervision/trimmed_frames"
     )

@@ -82,13 +82,6 @@ class AnomalyDetection:
                                 file_name = f"frame_trimmed_video_{class_name}_{frame_count}.jpg"
                                 cv2.imwrite(os.path.join(Settings.ABS_TRIMMED_FRAME_PATH, file_name), frame)
                                 print(f"Saved at: {file_name}")
-                                # x1, y1, x2, y2 = list(map(int, box.xyxy[0]))
-                                # cv2.imshow("Frame", frame)
-                                # cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                                # cv2.putText(frame, 'Frame', (50, 50), cv2.FONT_HERSHEY_COMPLEX, 2, (255, 0, 0), 2,
-                                #             cv2.LINE_AA)
-                                # if cv2.waitKey(1) & 0xFF == ord('q'):
-                                #     break
                                 frame_count += 1
                                 tracked_objects.append({
                                     "detected_timestamp": detected_timestamp,

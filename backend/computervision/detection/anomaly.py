@@ -14,6 +14,8 @@ from core.models import Report
 import time
 from asgiref.sync import sync_to_async
 from core.onesignal import OneSignalNotification
+from django.forms.models import model_to_dict
+
 
 class AnomalyDetection:
 
@@ -75,17 +77,33 @@ class AnomalyDetection:
         os.makedirs(folder_path, exist_ok=True)
         return folder_path, random_folder
 
-    async def notify_clients(self, notitype: str):
+    async def notify_clients(self, notitype, data=None):
+        if data is None:
+            data = []
+
         channel_layer = get_channel_layer()
-        await self.channel_layer.group_send(
-            "notification",
-            {
-                "type": "send_notification",
-                "notification": {
-                    "type": notitype,
-                    "data": []
-                }
+        notidata = {
+            "type": "send_notification",
+            "notification": {
+                "type": notitype,
+                "data": data
             }
+        }
+        # print("Notfication Data")
+        await channel_layer.group_send(
+            "notification",
+            notidata
+        )
+
+    async def insert_data(self, source_url, confidence, status, timestamp_start, timestamp_end, folder_name):
+        report_creation = sync_to_async(Report.objects.create, thread_sensitive=True)
+        return await report_creation(
+            source=source_url,
+            confidence=confidence,
+            status=status,
+            timestamp_start=timestamp_start,
+            timestamp_end=timestamp_end,
+            video=folder_name
         )
 
     async def get_frame_trims(self) -> list | str:
@@ -99,11 +117,18 @@ class AnomalyDetection:
         height = self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
         noti_sent = False
+        already_inserted = False
+        source_url = self.source_url
         location = "Kathmandu"
         if "sifal.mp4" in self.source_url:
             location = "Sifal, Kathmandu"
+            source_url = "http://127.0.0.1:8000/video/sifal"
         elif "maitighar.mp4" in self.source_url:
             location = "Maitighar, Kathmandu"
+            source_url = "http://127.0.0.1:8000/video/maitighar"
+        elif "ktm.mp4" in self.source_url:
+            location = "New Buspark, Kathmandu"
+            source_url = "http://127.0.0.1:8000/video/ktm"
 
         try:
             frame_count = 0
@@ -111,7 +136,7 @@ class AnomalyDetection:
             for _ in range(skip_frames):
                 self.cap.read()
 
-            await self.notify_clients("first_frame")
+            # await self.notify_clients("first_frame")
             while self.cap.isOpened():
                 ret, frame = self.cap.read()
                 if not ret:
@@ -133,7 +158,7 @@ class AnomalyDetection:
                             elif class_name == "-normal-accident-" and (status != "fatal" and status != "moderate"):
                                 status = "normal"
 
-                            if status == "fatal" and not noti_sent:
+                            if (status == "fatal" or status == "moderate") and not noti_sent:
                                 noti_sent = True
                                 OneSignalNotification.send({
                                     "title": "Incident Alert!!!",
@@ -159,6 +184,8 @@ class AnomalyDetection:
                                 location_name = "Sifal, Kathmandu"
                                 if "maitighar.mp4" in self.source_url:
                                     location_name = "Maitighar, Kathmandu"
+                                if "ktm.mp4" in self.source_url:
+                                    location_name = "New Buspark, Kathmandu"
 
                                 cv2.putText(frame, location_name, (10, 55), cv2.FONT_HERSHEY_COMPLEX, 0.7,
                                             (0, 255, 0), 1,
@@ -192,35 +219,28 @@ class AnomalyDetection:
                         yield b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
                         await asyncio.sleep(0.0001)
 
+            report = await self.insert_data(self.source_url, confidence, status, timestamp_start, timestamp_end,
+                                            folder_name)
+            # Send Notification
+            noti_data = model_to_dict(report)
+            if report.video:
+                noti_data["video"] = f"http://127.0.0.1:8000/player/{report.video}"
+                noti_data["timestamp_start"] = report.timestamp_start.timestamp()
+                noti_data["timestamp_end"] = report.timestamp_end.timestamp()
+
+
+            OneSignalNotification.send({
+                "title": "Incident Alert!!!",
+                "message": f"There has been an accident on {location}",
+                "data": noti_data
+            })
+            # await self.notify_clients("new_alert", [
+            #     noti_data
+            # ])
             # return tracked_objects
-            await self.notify_clients("analyze_complete")
         except Exception as e:
             error = f"Error: {e}"
             print(error)
             # return error
-
-        report_creation = sync_to_async(Report.objects.create, thread_sensitive=True)
-
-        source_url = self.source_url
-        if "sifal.mp4" in source_url:
-            source_url = "http://127.0.0.1:8000/video/sifal"
-        elif "maitighar.mp4" in source_url:
-            source_url = "http://127.0.0.1:8000/video/maitighar"
-
-        await report_creation(
-            source=source_url,
-            confidence=confidence,
-            status=status,
-            timestamp_start=timestamp_start,
-            timestamp_end=timestamp_end,
-            video=folder_name
-        )
-
-        if not noti_sent and status == "moderate":
-            # Send Notification
-            OneSignalNotification.send({
-                "title": "Incident Alert!!!",
-                "message": f"There has been an accident on {location}"
-            })
 
         self.cap.release()
